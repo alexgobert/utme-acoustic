@@ -4,6 +4,8 @@ import pygame
 import threading
 from mutagen.mp3 import MP3
 
+# Test comment
+
 # Set up Pygame mixer
 pygame.mixer.init()
 
