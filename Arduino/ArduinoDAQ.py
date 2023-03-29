@@ -11,7 +11,7 @@ class SerialConnect:
         checks to see all data lists are the same length
     """
     def __init__(self, serialPort, fileName, serialBaud, dataRate, \
-                 dataNames, dataTypes,commandTimes=[], commandData=[], commandTypes=[]):
+                 dataNames, dataTypes, commandDict={}):
         self.port = serialPort
         self.fileName = fileName
         self.baud = serialBaud
@@ -28,8 +28,7 @@ class SerialConnect:
         self.dataTypes = dataTypes
         
         # Create data frame of commands to send to Arduino
-        command_dict = {'time': commandTimes, 'value': commandData, 'command': commandTypes}
-        self.command_df = pd.DataFrame(command_dict)
+        self.command_df = pd.DataFrame(commandDict)
         self.command_df_idx = 0
         
         # initialize a list of lists to store all of the collected data
@@ -44,8 +43,8 @@ class SerialConnect:
         
         # For debug purposes
         self.waitingList = []
-      
-        
+    
+
     """
     connectToArduino:
          attepmts to connect to Arduino through the serial port and sends
