@@ -1,0 +1,8 @@
+Everything-Tkinter==0.2
+future==0.18.3
+iso8601==1.1.0
+mutagen==1.46.0
+PyAudio==0.2.13
+pygame==2.3.0
+PyYAML==6.0
+serial==0.0.97
