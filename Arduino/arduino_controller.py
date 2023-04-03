@@ -8,7 +8,7 @@ PORT = 'COM7'
 BAUD = 9600
 
 DEGREE_THRESHOLD = 5
-CONTINUOUS_SPEED = 40 # deg/sec
+CONTINUOUS_SPEED = 40 # deg/sec TODO: determine default speed
 BUTTON_DELAY = 1
 PLAY_PAUSE = 'p'
 ONE_DEGREE = '1'
@@ -45,14 +45,14 @@ def createCommands(angleStep: int, recordDelay: float) -> List[Tuple[float, str]
     if angleStep < DEGREE_THRESHOLD:
         # one degree button angleStep times
         
-        pass
+        for _ in range(0, 360 + angleStep, angleStep):
+            commands.append((recordDelay, ONE_DEGREE))
+            [commands.append(BUTTON_DELAY, ONE_DEGREE) for _ in range(angleStep)]
     else:
         # play/pause for enough time
         rotationTime = angleStep / CONTINUOUS_SPEED
 
-        # i = angle index
         for _ in range(0, 360 + angleStep, angleStep):
-            # TODO: derive time formula
 
             commands.append((recordDelay, PLAY_PAUSE)) # start rotation
             commands.append((rotationTime, PLAY_PAUSE)) # stop rotation
@@ -78,5 +78,6 @@ def connectToArduino(port: str, baud: int):
     return serialConnection
 
 if __name__ == '__main__':
-    commands = createCommands(10, 1)
+    # commands = createCommands(10, 1)
+    commands = createCommands(1, )
     print(commands)
