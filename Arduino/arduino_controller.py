@@ -13,9 +13,7 @@ BUTTON_DELAY = 1
 PLAY_PAUSE = 'p'
 ONE_DEGREE = '1'
 
-def startRotate(angleStep: int, recordDelay: float, port = PORT, baud = BAUD):
-    arduino = connectToArduino(port, baud)
-    commands = createCommands(angleStep, recordDelay)
+def startRotate(commands: List[Tuple[float, str]], arduino: Serial):
 
     for time, command in commands:
         sleep(time)
