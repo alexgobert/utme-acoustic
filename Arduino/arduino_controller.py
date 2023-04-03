@@ -60,9 +60,9 @@ def createCommands(angleStep: int, recordDelay: float) -> List[Tuple[float, str]
     return commands
 
 def connectToArduino(port: str, baud: int):
-    """
+    '''
     Attempts to connect to Arduino through the serial port and sends the acquistion data rate to the Arduino
-    """
+    '''
     serialConnection = None
 
     print(f'Trying to connect to: {port} at {baud} BAUD.')
