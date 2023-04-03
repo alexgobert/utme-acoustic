@@ -3,6 +3,7 @@ import wave
 import pygame
 import threading
 from mutagen.mp3 import MP3
+from datetime import datetime, time
 
 # Test comment
 
@@ -49,10 +50,12 @@ def record_audio(audio_filename, audio_length, audio_path):
 def run_threads(audio_file, audio_path):
     # Get the length of the audio file
     audio_length = int(MP3(audio_file).info.length)
+
+    curTime = datetime.now().time()
     
     # Define threads for playing audio and recording from the microphone
     play_audio_thread = threading.Thread(target=play_audio, args=(audio_file,))
-    record_audio_thread = threading.Thread(target=record_audio, args=("audio.wav", audio_length, audio_path))
+    record_audio_thread = threading.Thread(target=record_audio, args=(f"audio{curTime.minute}.wav", audio_length, audio_path))
     
     # Start the threads
     play_audio_thread.start()
