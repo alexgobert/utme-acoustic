@@ -17,6 +17,8 @@ chunk = 1024
 
 # Define a function to play an audio file
 def play_audio(audio_file):
+    sleep(1)
+    
     pygame.mixer.music.load(audio_file)
     pygame.mixer.music.play()
 
