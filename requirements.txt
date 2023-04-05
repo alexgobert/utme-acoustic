@@ -5,4 +5,4 @@ mutagen==1.46.0
 PyAudio==0.2.13
 pygame==2.3.0
 PyYAML==6.0
-serial==0.0.97
+pyserial==3.5

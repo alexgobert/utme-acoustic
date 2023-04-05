@@ -23,7 +23,7 @@
 void setup() {
     pinMode(LED_BUILTIN, OUTPUT);
 
-    Serial.begin(115200);
+    Serial.begin(9600);
 
     // Just to know which program is running on my Arduino
     Serial.println(F("START " __FILE__ " from " __DATE__ "\r\nUsing library version " VERSION_IRREMOTE));
@@ -43,35 +43,39 @@ void setup() {
  * and a variable 8 bit command.
  * There are exceptions like Sony and Denon, which have 5 bit address.
  */
-uint8_t sCommand = 0x46;
-uint8_t sRepeats = 0;
+uint8_t sCommand = 0x9;
 
 void loop() {
-    /*
-     * Print current send values
-     */
+    while (Serial.available() == 0) {}
+
+    char input = Serial.read();
+    switch (input) {
+        case '1': // one degree
+            sCommand = 0x46;
+            break;
+        case 'p': // play/pause
+            sCommand = 0x19;
+            break;
+        case 's': // set origin
+            sCommand = 0x7;
+            break;
+        case 'o': // go to origin
+            sCommand = 0x9;
+            break;
+        default:
+            Serial.println(F("Invalid selection"));
+    }
+
     Serial.println();
     Serial.print(F("Send now: address=0x00, command=0x"));
     Serial.print(sCommand, HEX);
-    Serial.print(F(", repeats="));
-    Serial.print(sRepeats);
     Serial.println();
 
     Serial.println(F("Send standard NEC with 8 bit address"));
     Serial.flush();
 
     // Receiver output for the first loop must be: Protocol=NEC Address=0x102 Command=0x34 Raw-Data=0xCB340102 (32 bits)
-    IrSender.sendNEC(0x00, sCommand, sRepeats);
+    IrSender.sendNEC(0x00, sCommand, 0);
 
-    /*
-     * Increment send values
-     */
-    // sCommand += 0x11;
-    // sRepeats++;
-    // // clip repeats at 4
-    // if (sRepeats > 4) {
-    //     sRepeats = 4;
-    // }
-
-    delay(1000);  // delay must be greater than 5 ms (RECORD_GAP_MICROS), otherwise the receiver sees it as one long signal
+    // delay(1000);  // delay must be greater than 5 ms (RECORD_GAP_MICROS), otherwise the receiver sees it as one long signal
 }

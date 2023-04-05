@@ -3,14 +3,16 @@ from time import sleep
 from serial import Serial
 
 DEGREE_THRESHOLD = 5
-CONTINUOUS_SPEED = 40 # deg/sec TODO: determine default speed
+CONTINUOUS_SPEED = 90 / 7.55 # deg/sec, empirical
 BUTTON_DELAY = 1
 PLAY_PAUSE = 'p'
 ONE_DEGREE = '1'
 
 def rotate(startDelay: float, command: str, arduino: Serial):
+    print(startDelay)
     sleep(startDelay)
 
+    print(command)
     arduino.write(command.encode())
 
 def create_commands(angleStep: int) -> Tuple[List[Tuple[float, str]], int]:

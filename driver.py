@@ -12,18 +12,17 @@ def main(play_file: str, rec_dir: str, angleStep: int):
     # recordDelay = get_wav_duration(play_file) + 1.25
 
     commands, batch_size = create_commands(angleStep)
-    arduino = connect_arduino(PORT, BAUD)
 
-    # arduino connection not made
-    if not arduino:
-        return
+    with closing(connect_arduino(PORT, BAUD)) as arduino:
 
-    for idx, (sleepTime, command) in enumerate(commands):
-        rotate(sleepTime, command, arduino)
+        for idx, (sleepTime, command) in enumerate(commands):
+            # only execute audio if done rotating
+            if idx % batch_size == 0:
+                run_threads(play_file, rec_dir)
+            
+            rotate(sleepTime, command, arduino)
 
-        # only execute audio if done recording
-        if idx % batch_size == 0:
-            run_threads(play_file, rec_dir)
+        print('test complete')
 
 
 def get_wav_duration(filename: str) -> float:
