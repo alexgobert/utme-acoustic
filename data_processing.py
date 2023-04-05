@@ -15,6 +15,11 @@ def get_filenames_in_order(directory):
     
     return [filename for _, filename in timestamps]
 
+def parse_freq_input(input_string):
+    freq_list = input_string.split(",")
+    freq_list = [int(freq.strip()) for freq in freq_list]
+    return freq_list
+
 if __name__ == '__main__':
     directory = '../test_results'
     print(get_filenames_in_order(directory))
