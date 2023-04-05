@@ -4,7 +4,7 @@ from serial import Serial
 
 DEGREE_THRESHOLD = 5
 CONTINUOUS_SPEED = 90 / 7.55 # deg/sec, empirical
-BUTTON_DELAY = 1
+BUTTON_DELAY = 0.5
 PLAY_PAUSE = 'p'
 ONE_DEGREE = '1'
 
