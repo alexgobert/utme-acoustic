@@ -1,3 +1,4 @@
+acoustics==0.2.6
 Everything-Tkinter==0.2
 future==0.18.3
 iso8601==1.1.0
