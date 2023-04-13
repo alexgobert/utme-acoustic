@@ -6,10 +6,10 @@ from contextlib import closing
 PORT = 'COM7'
 BAUD = 19200
 
-def main(play_file: str, rec_dir: str, angleStep: int, port = PORT):
+def main(play_file: str, rec_dir: str, angleStep: int, port = PORT, baud = BAUD):
     commands, batch_size = create_commands(angleStep)
 
-    with closing(connect_arduino(port, BAUD)) as arduino:
+    with closing(connect_arduino(port, baud)) as arduino:
         for idx, (sleepTime, command) in enumerate(commands):
             # only execute audio if done rotating
             if idx % batch_size == 0:
@@ -17,4 +17,4 @@ def main(play_file: str, rec_dir: str, angleStep: int, port = PORT):
             
             rotate(sleepTime, command, arduino)
 
-        print('test complete')
+    print('test complete')
