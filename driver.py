@@ -4,12 +4,12 @@ from contextlib import closing
 
 # default serial settings
 PORT = 'COM7'
-BAUD = 9600
+BAUD = 19200
 
-def main(play_file: str, rec_dir: str, angleStep: int):
+def main(play_file: str, rec_dir: str, angleStep: int, port = PORT):
     commands, batch_size = create_commands(angleStep)
 
-    with closing(connect_arduino(PORT, BAUD)) as arduino:
+    with closing(connect_arduino(port, BAUD)) as arduino:
         for idx, (sleepTime, command) in enumerate(commands):
             # only execute audio if done rotating
             if idx % batch_size == 0:
