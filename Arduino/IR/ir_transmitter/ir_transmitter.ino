@@ -46,6 +46,7 @@ void setup() {
 uint8_t sCommand = 0x9;
 
 void loop() {
+    // wait for input
     while (Serial.available() == 0) {}
 
     char input = Serial.read();
@@ -62,6 +63,15 @@ void loop() {
         case 'o': // go to origin
             sCommand = 0x9;
             break;
+        case 'a': // CCW
+            sCommand = 0xD;
+            break;
+        case 'd': // CW
+            sCommand = 0x16;
+            break;
+        case 'f': // 180
+            sCommand = 0x40;
+            break;
         default:
             Serial.println(F("Invalid selection"));
     }
@@ -74,10 +84,8 @@ void loop() {
     Serial.println(F("Send standard NEC with 8 bit address"));
     Serial.flush();
 
-    // Receiver output for the first loop must be: Protocol=NEC Address=0x102 Command=0x34 Raw-Data=0xCB340102 (32 bits)
-    IrSender.sendNEC(0x00, sCommand, 0);
-    Serial.readString();
-    delay(2000);
-
-    // delay(1000);  // delay must be greater than 5 ms (RECORD_GAP_MICROS), otherwise the receiver sees it as one long signal
+    IrSender.sendNEC(0x00, sCommand, 3); // 3rd arg is numRepeats
+    Serial.readString(); // clear monitor
+    
+    delay(2000); // delay must be greater than 5 ms (RECORD_GAP_MICROS), otherwise the receiver sees it as one long signal
 }

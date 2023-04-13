@@ -2,11 +2,19 @@ from typing import List, Tuple
 from time import sleep
 from serial import Serial
 
-DEGREE_THRESHOLD = 5
 CONTINUOUS_SPEED = 90 / 7.55 # deg/sec, empirical
-BUTTON_DELAY = 2
-PLAY_PAUSE = 'p'
+BUTTON_DELAY = 2 # sec
+DEGREE_THRESHOLD = CONTINUOUS_SPEED * BUTTON_DELAY
+
+# codes
 ONE_DEGREE = '1'
+PLAY_PAUSE = 'p'
+SET_ORIGIN = 's'
+GO_ORIGIN = 'o'
+CCW = 'a'
+CW = 'd'
+HALF_CIRCLE = 'f' # 180 deg
+
 
 def rotate(startDelay: float, command: str, arduino: Serial):
     print(startDelay)
@@ -14,6 +22,7 @@ def rotate(startDelay: float, command: str, arduino: Serial):
 
     print(command)
     arduino.write(command.encode())
+
 
 def create_commands(angleStep: int) -> Tuple[List[Tuple[float, str]], int]:
     '''

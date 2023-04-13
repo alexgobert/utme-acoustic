@@ -4,7 +4,7 @@ from contextlib import closing
 
 # default serial settings
 PORT = 'COM7'
-BAUD = 19200
+BAUD = 115200
 
 def main(play_file: str, rec_dir: str, angleStep: int, port = PORT, baud = BAUD):
     commands, batch_size = create_commands(angleStep)
