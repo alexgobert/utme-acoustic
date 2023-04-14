@@ -84,8 +84,12 @@ void loop() {
     Serial.println(F("Send standard NEC with 8 bit address"));
     Serial.flush();
 
+    delayMicroseconds(13);
+
     IrSender.sendNEC(0x00, sCommand, 3); // 3rd arg is numRepeats
     Serial.readString(); // clear monitor
+
+    delayMicroseconds(13);
     
-    delay(2000); // delay must be greater than 5 ms (RECORD_GAP_MICROS), otherwise the receiver sees it as one long signal
+    delay(200);// delay must be greater than 5 ms (RECORD_GAP_MICROS), otherwise the receiver sees it as one long signal
 }
