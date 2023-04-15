@@ -2,7 +2,6 @@ from typing import List, Tuple
 from time import sleep
 from serial import Serial
 
-# CONTINUOUS_SPEED = 360 / 30.94 # deg/sec, empirical
 CONTINUOUS_SPEED = 1 / 60 * 360 # deg/sec
 BUTTON_DELAY = 3.5 # sec
 DEGREE_THRESHOLD = CONTINUOUS_SPEED * BUTTON_DELAY

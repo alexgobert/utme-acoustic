@@ -4,7 +4,7 @@ from contextlib import closing
 from time import sleep
 
 # default serial settings
-PORT = 'COM7'
+PORT = 'COM3'
 BAUD = 115200
 
 def main(play_file: str, rec_dir: str, angleStep: int, port = PORT, baud = BAUD):
