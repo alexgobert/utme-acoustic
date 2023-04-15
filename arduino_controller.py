@@ -18,18 +18,26 @@ SLOWER = 'q'
 FASTER = 'e'
 
 
-def rotate(startDelay: float, command: str, arduino: Serial):
+def sendCommand(startDelay: float, command: str, arduino: Serial):
     print(f'Sleep: {startDelay}\tCommand: {command}')
     sleep(startDelay)
 
     arduino.write(command.encode())
 
 
-def minimizeSpeed(arduino):
+def setupTurntable(arduino: Serial):
+    minimizeSpeed(arduino)
+    
+    # make sure it's going CW
+    sendCommand(BUTTON_DELAY, SET_ORIGIN)
+    sendCommand(BUTTON_DELAY, CCW)
+    sendCommand(BUTTON_DELAY, GO_ORIGIN)
+
+
+def minimizeSpeed(arduino: Serial):
     sleep(3) # give arduino time to init
     for _ in range(10):
-        arduino.write(SLOWER.encode())
-        sleep(BUTTON_DELAY)
+        sendCommand(BUTTON_DELAY, SLOWER)
 
 
 def create_commands(angleStep: int) -> Tuple[List[Tuple[float, str]], int]:
