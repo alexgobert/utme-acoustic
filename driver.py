@@ -3,7 +3,7 @@ from arduino_controller import create_commands, connect_arduino, rotate
 from contextlib import closing
 
 # default serial settings
-PORT = 'COM7'
+PORT = 'COM3'
 BAUD = 115200
 
 def main(play_file: str, rec_dir: str, angleStep: int, port = PORT, baud = BAUD):

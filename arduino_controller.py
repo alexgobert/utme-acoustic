@@ -3,7 +3,7 @@ from time import sleep
 from serial import Serial
 
 CONTINUOUS_SPEED = 90 / 7.55 # deg/sec, empirical
-BUTTON_DELAY = 2 # sec
+BUTTON_DELAY = 3 # sec
 DEGREE_THRESHOLD = CONTINUOUS_SPEED * BUTTON_DELAY
 
 # codes
@@ -17,10 +17,9 @@ HALF_CIRCLE = 'f' # 180 deg
 
 
 def rotate(startDelay: float, command: str, arduino: Serial):
-    print(startDelay)
     sleep(startDelay)
 
-    print(command)
+    print(f'Sleep: {startDelay}\tCommand: {command}')
     arduino.write(command.encode())
 
 
@@ -48,8 +47,8 @@ def create_commands(angleStep: int) -> Tuple[List[Tuple[float, str]], int]:
         # one degree button angleStep times
         batch_size = angleStep
         for _ in range(0, 360 + angleStep, angleStep):
-            commands.append((0, ONE_DEGREE))
-            [commands.append(BUTTON_DELAY, ONE_DEGREE) for _ in range(angleStep)]
+            # commands.append((0, ONE_DEGREE))
+            [commands.append((BUTTON_DELAY, ONE_DEGREE)) for _ in range(angleStep+1)]
     else:
         # play/pause for enough time
         rotationTime = angleStep / CONTINUOUS_SPEED
