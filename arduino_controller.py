@@ -2,8 +2,9 @@ from typing import List, Tuple
 from time import sleep
 from serial import Serial
 
-CONTINUOUS_SPEED = 90 / 7.55 # deg/sec, empirical
-BUTTON_DELAY = 2 # sec
+# CONTINUOUS_SPEED = 360 / 30.94 # deg/sec, empirical
+CONTINUOUS_SPEED = 1 / 60 * 360 # deg/sec
+BUTTON_DELAY = 3.5 # sec
 DEGREE_THRESHOLD = CONTINUOUS_SPEED * BUTTON_DELAY
 
 # codes
@@ -14,14 +15,22 @@ GO_ORIGIN = 'o'
 CCW = 'a'
 CW = 'd'
 HALF_CIRCLE = 'f' # 180 deg
+SLOWER = 'q'
+FASTER = 'e'
 
 
 def rotate(startDelay: float, command: str, arduino: Serial):
-    print(startDelay)
+    print(f'Sleep: {startDelay}\tCommand: {command}')
     sleep(startDelay)
 
-    print(command)
     arduino.write(command.encode())
+
+
+def minimizeSpeed(arduino):
+    sleep(3) # give arduino time to init
+    for _ in range(10):
+        arduino.write(SLOWER.encode())
+        sleep(BUTTON_DELAY)
 
 
 def create_commands(angleStep: int) -> Tuple[List[Tuple[float, str]], int]:
@@ -48,16 +57,16 @@ def create_commands(angleStep: int) -> Tuple[List[Tuple[float, str]], int]:
         # one degree button angleStep times
         batch_size = angleStep
         for _ in range(0, 360 + angleStep, angleStep):
-            commands.append((0, ONE_DEGREE))
-            [commands.append(BUTTON_DELAY, ONE_DEGREE) for _ in range(angleStep)]
+            # commands.append((0, ONE_DEGREE))
+            [commands.append((BUTTON_DELAY, ONE_DEGREE)) for _ in range(angleStep+1)]
     else:
         # play/pause for enough time
         rotationTime = angleStep / CONTINUOUS_SPEED
         batch_size = 2
 
-        for _ in range(0, 360 + angleStep, angleStep):
+        for _ in range(0, 360, angleStep):
 
-            commands.append((0, PLAY_PAUSE)) # start rotation
+            commands.append((0.5, PLAY_PAUSE)) # start rotation
             commands.append((rotationTime, PLAY_PAUSE)) # stop rotation
     
     return commands, batch_size

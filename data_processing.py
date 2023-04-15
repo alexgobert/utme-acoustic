@@ -4,7 +4,7 @@ from os import listdir
 from datetime import datetime
 
 # This function creates a list of the filenames, in order, in a specified directory
-def get_filenames_in_order(directory):
+def get_filenames_in_order(directory, limit=None):
     filenames = listdir(directory)
     timestamps = []
     for filename in filenames:
@@ -13,7 +13,8 @@ def get_filenames_in_order(directory):
         timestamps.append((timestamp, filename))
     timestamps.sort()
     
-    return [filename for _, filename in timestamps]
+    files = [filename for _, filename in timestamps]
+    return files[:limit] if limit else files
 
 def parse_freq_input(input_string):
     freq_list = input_string.split(",")

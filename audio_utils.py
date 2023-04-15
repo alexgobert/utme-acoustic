@@ -56,7 +56,7 @@ def run_threads(audio_file: str, audio_path: str) -> bool:
     
     # Define threads for playing audio and recording from the microphone
     play_audio_thread = threading.Thread(target=play_audio, args=(audio_file,))
-    record_audio_thread = threading.Thread(target=record_audio, args=(f"audio-{curTime}.wav", audio_length, audio_path))
+    record_audio_thread = threading.Thread(target=record_audio, args=(f"audio-{curTime}.wav", audio_length+1, audio_path))
 
     sleep(1)
 
@@ -68,7 +68,7 @@ def run_threads(audio_file: str, audio_path: str) -> bool:
     play_audio_thread.join()
     record_audio_thread.join()
 
-    print('done')
+    print('done playing')
     return True
 
 if __name__ == '__main__':

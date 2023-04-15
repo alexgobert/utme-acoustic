@@ -1,57 +1,75 @@
 import numpy as np
-from scipy.io import wavfile
 from acoustics._signal import Signal
 from data_processing import get_filenames_in_order
+import matplotlib.pyplot as plt
 
-# Define the weighting filter to use (e.g. A-weighting)
-# weighting_filter = Weighting('A')
-# weighting_filter = WEIGHTING_FUNCTIONS['A']
 
-# Define the path to the directory containing the WAV files
-# directory_path = 'C:\Users\ishaa\OneDrive\Documents\UTME Acoustic\Sample Results'
-directory_path = 'test_results'
-files = get_filenames_in_order(directory_path)
+def example(signal: Signal, plot=False):
+    n = signal.samples
+    p = np.fft.fft(signal.values)
 
-# Define the number of files and the angle increment between them
-# num_files = len(files)
-# angle_increment = 20
+    nUniquePts = int(np.ceil((n+1)/2.0))
 
-# Initialize the arrays to hold the SPL data and the max SPL values
-# spl_data = np.zeros((num_files,))  # One value per file
-# max_spl_values = np.zeros((num_files,))  # One value per file
-spl_data = []
-max_spl_values = []
+    p = (np.abs(p[:nUniquePts]) / float(n)) ** 2
 
-# Loop over each WAV file and extract the SPL data
-# for i in range(num_files):
-for file in files:
-    # Construct the file name
-    # file_name = f'{i*angle_increment:03d}.wav'  # e.g. "000.wav", "020.wav", "040.wav", etc.
+    # multiply by 2 bc cut of half of data
+    # DC and Nyquist should not be scaled
+    end = nUniquePts - (n % 2 == 0) # -1 if even, 0 if odd
+    p[1:end] *= 2
 
-    # Read the WAV file and extract the data
-    # sample_rate, data = wavfile.read(f'{directory_path}/{file}')
-    signal = Signal(*wavfile.read(f'{directory_path}/{file}')).weigh()
-    
-    # Apply the weighting filter to the data
-    # weighted_data = weighting_filter(data, sample_rate)
-    # weighted_data = weighting_filter(data)
-    
-    # Calculate the root-mean-squared (rms) value of the weighted data
-    # rms_value = np.sqrt(np.mean(weighted_data**2))
-    
-    # Store the rms value in the array
-    # spl_data[i] = rms_value
-    # spl_data.append(rms_value)
-    # max_spl_values.append(weighted_data)
+    if plot:
+        freqArray = np.arange(nUniquePts) * (signal.fs / n)
 
-    spl_data.append(signal.rms())
-    max_spl_values.append(signal.max())
-    
-    # Find the maximum SPL value in the data and store it in the array
-    # max_spl_values[i] = np.max(weighted_data)
+        plt.plot(freqArray/1000, 10*np.log10(p))
+        plt.xlabel('Frequency (kHz)')
+        plt.ylabel('Power (dB)')
+        plt.show()
 
-# Print the maximum SPL value from each file
-print(max_spl_values)
+    return p
 
-# Print the highest overall SPL value
-print(np.max(max_spl_values))
+
+def main(angleStep: int):
+    directory_path = 'test1-30'
+    directory_path = 'test_results'
+    files = get_filenames_in_order(directory_path, 360 // angleStep)
+
+    # Loop over each WAV file and extract the SPL data
+    # data = []
+    # for file in files:
+
+    #     # Read the WAV file and extract the data
+    #     signal = Signal.from_wav(f'{directory_path}/{file}').weigh()
+
+    #     data.append(example(signal, plot=False))
+    # replaced above with list comp
+    raw_data = [
+        example(Signal.from_wav(f'{directory_path}/{file}').weigh())
+        for file in files
+    ]
+
+    FREQ = 12000
+    data = np.array([angle[FREQ] for angle in raw_data])
+    data = 20 * np.log10(data)
+    # data = [(20*np.log10(angle[FREQ])) for angle in raw_data]
+    data /= np.min(data)
+    theta = np.arange(0, 360, angleStep) * np.pi / 180
+    print(list(theta))
+    print(data)
+    plt.polar(theta, data, marker='.')
+    plt.show()
+
+
+def plotMain():
+    directory_path = 'test_results'
+    files = get_filenames_in_order(directory_path)
+
+    for file in files:
+        data = example(Signal.from_wav(f'{directory_path}/{file}').weigh(), True)
+
+        plt.plot(data)
+        plt.show()
+
+
+if __name__ == '__main__':
+    main(30)
+    # plotMain()

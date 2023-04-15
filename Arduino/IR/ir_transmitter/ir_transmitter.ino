@@ -20,10 +20,14 @@
 #include "PinDefinitionsAndMore.h" // Define macros for input and output pin etc.
 #include <IRremote.hpp>
 
+int LASER_PIN = 5;
+long BAUD = 115200;
+
 void setup() {
     pinMode(LED_BUILTIN, OUTPUT);
+	pinMode(LASER_PIN, OUTPUT);
 
-    Serial.begin(115200);
+    Serial.begin(BAUD);
 
     // Just to know which program is running on my Arduino
     Serial.println(F("START " __FILE__ " from " __DATE__ "\r\nUsing library version " VERSION_IRREMOTE));
@@ -43,7 +47,7 @@ void setup() {
  * and a variable 8 bit command.
  * There are exceptions like Sony and Denon, which have 5 bit address.
  */
-uint8_t sCommand = 0x9;
+uint8_t sCommand = 0x18;
 
 void loop() {
     // wait for input
@@ -69,9 +73,18 @@ void loop() {
         case 'd': // CW
             sCommand = 0x16;
             break;
+        case 'q': // slower
+            sCommand = 0x18;
+            break;
+        case 'e': // faster
+            sCommand = 0x15;
+            break;
         case 'f': // 180
             sCommand = 0x40;
             break;
+		case 'l': // laser toggle
+			digitalWrite(LASER_PIN, !digitalRead(LASER_PIN));
+			break;
         default:
             Serial.println(F("Invalid selection"));
     }
