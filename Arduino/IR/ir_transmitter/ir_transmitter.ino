@@ -84,7 +84,7 @@ void loop() {
             break;
 		case 'l': // laser toggle
 			digitalWrite(LASER_PIN, !digitalRead(LASER_PIN));
-			break;
+			return;
         default:
             Serial.println(F("Invalid selection"));
     }
