@@ -2,6 +2,7 @@ from tkinter import Tk, ttk, filedialog, END
 from os import getcwd
 from driver import main
 from serial.tools.list_ports import comports
+from SignalProcessing import process_files
 
 class AcousticDirectivityDriverGUI:
 
@@ -18,7 +19,7 @@ class AcousticDirectivityDriverGUI:
         self.recording_label = ttk.Label(master, text="Path to store .WAV recording:")
         self.recording_entry = ttk.Entry(master, width=50)
         self.port_label = ttk.Label(master, text='Arduino Port:')
-        self.port_entry = ttk.Combobox(master, values=self.getPorts(), width=45)
+        self.port_entry = ttk.Combobox(master, values=self.get_ports(), width=45)
         self.freq_label = ttk.Label(master, text='Frequency to plot:')
         self.freq_entry = ttk.Entry(master)
 
@@ -28,6 +29,7 @@ class AcousticDirectivityDriverGUI:
 
         # Create button to start playback
         self.play_button = ttk.Button(master, text="Play", command=self.start_test)
+        self.process_button = ttk.Button(master, text='Plot Only', command=self.start_processing)
 
         # Style configuration
         self.style = ttk.Style()
@@ -57,6 +59,7 @@ class AcousticDirectivityDriverGUI:
         self.freq_label.grid(row=5, column=0, padx=5, pady=5)
         self.freq_entry.grid(row=5, column=1, padx=5, pady=5)
         self.play_button.grid(row=6, column=1, padx=5, pady=5)
+        self.process_button.grid(row=7, column=1, padx=5, pady=5)
 
     def browse_files(self):
         file_path = filedialog.askopenfilename(initialdir=getcwd(), title="Select File", filetypes=(("MP3 Files", "*.mp3"),))
@@ -69,7 +72,7 @@ class AcousticDirectivityDriverGUI:
         self.recording_entry.insert(0, recording_path)
 
     def start_test(self):
-        if not all((self.isInt(self.rotation_entry.get()), self.isInt(self.freq_entry.get()))):
+        if not self.fields_filled():
             # TODO: input validation
             return
 
@@ -81,8 +84,28 @@ class AcousticDirectivityDriverGUI:
 
         main(mp3, rec_path, angleStep, freq, port)
 
+    def start_processing(self):
+        if not all((self.is_int(self.rotation_entry.get()), self.is_int(self.freq_entry.get()), self.recording_entry.get())):
+            # TODO: error message
+            return
+
+        rec_path = self.recording_entry.get()
+        angleStep = int(self.rotation_entry.get())
+        freq = int(self.freq_entry.get())
+
+        process_files(angleStep, freq, rec_path)
+
+    def fields_filled(self) -> bool:
+        return all((
+            self.is_int(self.rotation_entry.get()),
+            self.is_int(self.freq_entry.get()),
+            self.path_entry.get(),
+            self.recording_entry.get(),
+            self.port_entry.get()
+        ))
+
     @classmethod
-    def isInt(cls, val) -> bool:
+    def is_int(cls, val) -> bool:
         try:
             int(val)
         except:
@@ -91,8 +114,8 @@ class AcousticDirectivityDriverGUI:
         return True
 
     @classmethod
-    def getPorts(cls) -> list:
-        return [port.description for port in comports()]
+    def get_ports(cls) -> list:
+        return [port.description for port in comports()]   
         
         
 
