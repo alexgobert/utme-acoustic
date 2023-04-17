@@ -3,7 +3,7 @@ from time import sleep
 from serial import Serial
 
 CONTINUOUS_SPEED = 1 / 60 * 360 # deg/sec
-BUTTON_DELAY = 3.5 # sec
+BUTTON_DELAY = 2.5 # sec
 DEGREE_THRESHOLD = CONTINUOUS_SPEED * BUTTON_DELAY
 
 # codes
