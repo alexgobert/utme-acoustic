@@ -46,26 +46,22 @@ def fft_process(signal: Signal, plot=False) -> NDArray:
     return p
 
 
-def main(angleStep: int):
-    directory_path = 'test_results'
-    directory_path = 'test1-30'
-    files = get_filenames_in_order(directory_path, 360 // angleStep)
+def process_files(angleStep: int, freq: int, dir_path: str = 'test_results'):
+    files = get_filenames_in_order(dir_path, 360 // angleStep)
 
     # read WAV file and perform A weighting
     raw_data = [
-        fft_process(Signal.from_wav(f'{directory_path}/{file}').weigh())
+        fft_process(Signal.from_wav(f'{dir_path}/{file}').weigh())
         for file in files
     ]
 
-    FREQ = 12000
-
-    data = np.fromiter((10*np.log10(angle[FREQ]) for angle in raw_data), float)
+    data = np.fromiter((10*np.log10(angle[freq]) for angle in raw_data), float)
     data -= np.max(data)
 
     theta = np.arange(0, 360, angleStep) * np.pi / 180
 
     plt.polar(theta, data, marker='.')
-    plt.title(f'Beam Pattern of Receiver at {FREQ:,} Hz')
+    plt.title(f'Beam Pattern of Receiver at {freq:,} Hz')
     plt.show()
 
 
@@ -81,5 +77,5 @@ def plotMain():
 
 
 if __name__ == '__main__':
-    main(30)
+    process_files(30, 8000, 'test2-30')
     # plotMain()
