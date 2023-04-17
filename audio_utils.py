@@ -1,13 +1,13 @@
-import pyaudio
-import wave
-import pygame
-import threading
+from pyaudio import paInt16, PyAudio
+from wave import open as wave_open
+from pygame import mixer
+from threading import Thread
 from mutagen.mp3 import MP3
 from datetime import datetime
 from time import sleep
 
 # Set up Pygame mixer
-pygame.mixer.init()
+mixer.init()
 
 # Define variables for microphone recording
 sample_rate = 44100
@@ -17,16 +17,16 @@ chunk = 1024
 def play_audio(audio_file):
     sleep(1)
     
-    pygame.mixer.music.load(audio_file)
-    pygame.mixer.music.play()
+    mixer.music.load(audio_file)
+    mixer.music.play()
 
 # Define a function to record audio from the microphone
 def record_audio(audio_filename, audio_length, audio_path):
-    audio_format = pyaudio.paInt16
+    audio_format = paInt16
     channels = 1
     audio_buffer = []
     
-    audio_recorder = pyaudio.PyAudio()
+    audio_recorder = PyAudio()
     audio_stream = audio_recorder.open(format=audio_format, channels=channels,
                                         rate=sample_rate, input=True,
                                         frames_per_buffer=chunk)
@@ -41,7 +41,7 @@ def record_audio(audio_filename, audio_length, audio_path):
     
     # Save the audio recording to a WAV file in the specified path
     audio_file_path = audio_path + "/" + audio_filename
-    audio_file = wave.open(audio_file_path, 'wb')
+    audio_file = wave_open(audio_file_path, 'wb')
     audio_file.setnchannels(channels)
     audio_file.setsampwidth(audio_recorder.get_sample_size(audio_format))
     audio_file.setframerate(sample_rate)
@@ -55,8 +55,8 @@ def run_threads(audio_file: str, audio_path: str) -> bool:
     curTime = int(datetime.now().timestamp())
     
     # Define threads for playing audio and recording from the microphone
-    play_audio_thread = threading.Thread(target=play_audio, args=(audio_file,))
-    record_audio_thread = threading.Thread(target=record_audio, args=(f"audio-{curTime}.wav", audio_length+1, audio_path))
+    play_audio_thread = Thread(target=play_audio, args=(audio_file,))
+    record_audio_thread = Thread(target=record_audio, args=(f"audio-{curTime}.wav", audio_length+1, audio_path))
 
     sleep(1)
 

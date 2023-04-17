@@ -3,6 +3,10 @@ from os import getcwd
 from driver import main
 from serial.tools.list_ports import comports
 from SignalProcessing import process_files
+from arduino_controller import create_commands
+from functools import reduce
+from datetime import timedelta
+from mutagen.mp3 import MP3
 
 class AcousticDirectivityDriverGUI:
 
@@ -22,6 +26,7 @@ class AcousticDirectivityDriverGUI:
         self.port_entry = ttk.Combobox(master, values=self.get_ports(), width=45)
         self.freq_label = ttk.Label(master, text='Frequency to plot:')
         self.freq_entry = ttk.Entry(master)
+        self.estimate_label = ttk.Label(master, text='')
 
         # Create buttons for file dialogs
         self.browse_button = ttk.Button(master, text="Browse", command=self.browse_files)
@@ -29,6 +34,7 @@ class AcousticDirectivityDriverGUI:
 
         # Create button to start playback
         self.play_button = ttk.Button(master, text="Play", command=self.start_test)
+        self.estimate_button = ttk.Button(master, text='Estimate Time', command=self.estimate_time)
         self.process_button = ttk.Button(master, text='Plot Only', command=self.start_processing)
 
         # Style configuration
@@ -58,8 +64,10 @@ class AcousticDirectivityDriverGUI:
         self.port_entry.grid(row=4, column=1, padx=5, pady=5)
         self.freq_label.grid(row=5, column=0, padx=5, pady=5)
         self.freq_entry.grid(row=5, column=1, padx=5, pady=5)
-        self.play_button.grid(row=6, column=1, padx=5, pady=5)
+        self.play_button.grid(row=6, column=1, padx=0, pady=5)
         self.process_button.grid(row=7, column=1, padx=5, pady=5)
+        self.estimate_button.grid(row=6, column=2, padx=0, pady=5)
+        self.estimate_label.grid(row=7, column=2, padx=5, pady=5)
 
     def browse_files(self):
         file_path = filedialog.askopenfilename(initialdir=getcwd(), title="Select File", filetypes=(("MP3 Files", "*.mp3"),))
@@ -95,6 +103,24 @@ class AcousticDirectivityDriverGUI:
 
         process_files(angleStep, freq, rec_path)
 
+    def estimate_time(self):
+        if not all((self.is_int(self.rotation_entry.get()), self.path_entry.get())):
+            # TODO: error message
+            return
+        
+        angleStep = int(self.rotation_entry.get())
+        mp3 = self.path_entry.get()
+
+        commands, _ = create_commands(angleStep)
+
+        time = reduce(lambda x, y: x + y[0], commands, 0)
+        time += MP3(mp3).info.length * 360 / angleStep
+
+        time = str(timedelta(seconds=int(time)))
+
+        self.estimate_label.config(text=self.format_date(time))
+
+
     def fields_filled(self) -> bool:
         return all((
             self.is_int(self.rotation_entry.get()),
@@ -116,7 +142,15 @@ class AcousticDirectivityDriverGUI:
     @classmethod
     def get_ports(cls) -> list:
         return [port.description for port in comports()]   
+    
+    @classmethod
+    def format_date(cls, strng: str) -> str:
+        FIELDS = ('Hours', 'Minutes', 'Seconds')
+
+        lst = strng.strip().split(':')
+        zipped = zip(lst, FIELDS)
         
+        return ', '.join(' '.join(elem) for elem in zipped)
         
 
 if __name__ == '__main__':
