@@ -29,15 +29,15 @@ def setupTurntable(arduino: Serial):
     minimizeSpeed(arduino)
     
     # make sure it's going CW
-    sendCommand(BUTTON_DELAY, SET_ORIGIN)
-    sendCommand(BUTTON_DELAY, CCW)
-    sendCommand(BUTTON_DELAY, GO_ORIGIN)
+    sendCommand(BUTTON_DELAY, SET_ORIGIN, arduino)
+    sendCommand(BUTTON_DELAY, CCW, arduino)
+    sendCommand(BUTTON_DELAY, GO_ORIGIN, arduino)
 
 
 def minimizeSpeed(arduino: Serial):
     sleep(3) # give arduino time to init
     for _ in range(10):
-        sendCommand(BUTTON_DELAY, SLOWER)
+        sendCommand(BUTTON_DELAY, SLOWER, arduino)
 
 
 def create_commands(angleStep: int) -> Tuple[List[Tuple[float, str]], int]:
