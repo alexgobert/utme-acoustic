@@ -36,9 +36,5 @@ def rotate_only(angleStep: int, port, baud = BAUD):
     print('test complete')
 
 
-def process_only(angleStep: int, rec_dir: str):
-    pass
-
-
 if __name__ == '__main__':
     rotate_only(30, 'COM7')
