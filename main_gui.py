@@ -3,6 +3,7 @@ from tkinter import ttk
 from tkinter import filedialog
 import os
 from driver import main
+from serial.tools.list_ports import comports
 
 class AcousticDirectivityDriverGUI:
 
@@ -18,6 +19,8 @@ class AcousticDirectivityDriverGUI:
         self.rotation_entry = ttk.Entry(master)
         self.recording_label = ttk.Label(master, text="Path to store .WAV recording:")
         self.recording_entry = ttk.Entry(master, width=50)
+        self.port_label = ttk.Label(master, text='Arduino Port:')
+        self.port_entry = ttk.Combobox(master, values=self.getPorts())
 
         # Create buttons for file dialogs
         self.browse_button = ttk.Button(master, text="Browse", command=self.browse_files)
@@ -49,7 +52,9 @@ class AcousticDirectivityDriverGUI:
         self.recording_label.grid(row=1, column=0, padx=5, pady=5, sticky="w")
         self.recording_entry.grid(row=1, column=1, padx=5, pady=5)
         self.recording_browse_button.grid(row=1, column=2, padx=5, pady=5)
-        self.play_button.grid(row=4, column=1, padx=5, pady=5)
+        self.port_label.grid(row=4, column=0, padx=5, pady=5)
+        self.port_entry.grid(row=4, column=1, padx=5, pady=5)
+        self.play_button.grid(row=5, column=1, padx=5, pady=5)
 
     def browse_files(self):
         file_path = filedialog.askopenfilename(initialdir=os.getcwd(), title="Select File", filetypes=(("MP3 Files", "*.mp3"),))
@@ -69,11 +74,9 @@ class AcousticDirectivityDriverGUI:
         mp3 = self.path_entry.get()
         rec_path = self.recording_entry.get()
         angleStep = int(self.rotation_entry.get())
-        
-        print(mp3)
-        print(rec_path)
+        port = self.port_entry.get()
 
-        main(mp3, rec_path, angleStep)
+        main(mp3, rec_path, angleStep, port)
 
     @classmethod
     def isInt(cls, val) -> bool:
@@ -83,6 +86,10 @@ class AcousticDirectivityDriverGUI:
             return False
         
         return True
+
+    @classmethod
+    def getPorts(cls) -> list:
+        return [port.name for port in comports()]
         
         
 
