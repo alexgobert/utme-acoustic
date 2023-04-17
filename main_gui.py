@@ -18,7 +18,7 @@ class AcousticDirectivityDriverGUI:
         self.recording_label = ttk.Label(master, text="Path to store .WAV recording:")
         self.recording_entry = ttk.Entry(master, width=50)
         self.port_label = ttk.Label(master, text='Arduino Port:')
-        self.port_entry = ttk.Combobox(master, values=self.getPorts())
+        self.port_entry = ttk.Combobox(master, values=self.getPorts(), width=45)
         self.freq_label = ttk.Label(master, text='Frequency to plot:')
         self.freq_entry = ttk.Entry(master)
 
@@ -69,14 +69,14 @@ class AcousticDirectivityDriverGUI:
         self.recording_entry.insert(0, recording_path)
 
     def start_test(self):
-        if not all(self.isInt(self.rotation_entry.get()), self.isInt(self.freq_entry.get())):
+        if not all((self.isInt(self.rotation_entry.get()), self.isInt(self.freq_entry.get()))):
             # TODO: input validation
             return
 
         mp3 = self.path_entry.get()
         rec_path = self.recording_entry.get()
         angleStep = int(self.rotation_entry.get())
-        port = self.port_entry.get()
+        port = self.port_entry.get()[-5:-1] # substring to get COM name
         freq = int(self.freq_entry.get())
 
         main(mp3, rec_path, angleStep, freq, port)
@@ -92,7 +92,7 @@ class AcousticDirectivityDriverGUI:
 
     @classmethod
     def getPorts(cls) -> list:
-        return [port.name for port in comports()]
+        return [port.description for port in comports()]
         
         
 
