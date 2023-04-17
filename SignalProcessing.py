@@ -3,8 +3,26 @@ from acoustics._signal import Signal
 from data_processing import get_filenames_in_order
 import matplotlib.pyplot as plt
 
+NDArray = np.ndarray
 
-def example(signal: Signal, plot=False):
+def fft_process(signal: Signal, plot=False) -> NDArray:
+    '''
+    Function for performing an FFT on a .WAV file. Because FFTs are symmetric, this function discards the second half of the FFT and doubles the magnitude of the first half to preserve the energy of the wave. The DC offset and the Nyquist point are unique, and are therefore not doubled.
+
+    Parameters
+    ---------
+    signal : Signal
+        Instance of Signal class, contains .WAV data
+    
+    plot : bool, optional
+        If true, plots data as Power (dB) vs Frequency (kHz)
+
+    Returns
+    -------
+    data : NDArray[Floating]
+        NDArray of the FFT'ed data. There is a one-to-one correlation between array index and frequency.
+    '''
+
     n = signal.samples
     p = np.fft.fft(signal.values)
 
@@ -29,33 +47,25 @@ def example(signal: Signal, plot=False):
 
 
 def main(angleStep: int):
-    directory_path = 'test1-30'
     directory_path = 'test_results'
+    directory_path = 'test1-30'
     files = get_filenames_in_order(directory_path, 360 // angleStep)
 
-    # Loop over each WAV file and extract the SPL data
-    # data = []
-    # for file in files:
-
-    #     # Read the WAV file and extract the data
-    #     signal = Signal.from_wav(f'{directory_path}/{file}').weigh()
-
-    #     data.append(example(signal, plot=False))
-    # replaced above with list comp
+    # read WAV file and perform A weighting
     raw_data = [
-        example(Signal.from_wav(f'{directory_path}/{file}').weigh())
+        fft_process(Signal.from_wav(f'{directory_path}/{file}').weigh())
         for file in files
     ]
 
     FREQ = 12000
-    data = np.array([angle[FREQ] for angle in raw_data])
-    data = 20 * np.log10(data)
-    # data = [(20*np.log10(angle[FREQ])) for angle in raw_data]
-    data /= np.min(data)
+
+    data = np.fromiter((10*np.log10(angle[FREQ]) for angle in raw_data), float)
+    data -= np.max(data)
+
     theta = np.arange(0, 360, angleStep) * np.pi / 180
-    print(list(theta))
-    print(data)
+
     plt.polar(theta, data, marker='.')
+    plt.title(f'Beam Pattern of Receiver at {FREQ:,} Hz')
     plt.show()
 
 
@@ -64,7 +74,7 @@ def plotMain():
     files = get_filenames_in_order(directory_path)
 
     for file in files:
-        data = example(Signal.from_wav(f'{directory_path}/{file}').weigh(), True)
+        data = fft_process(Signal.from_wav(f'{directory_path}/{file}').weigh(), True)
 
         plt.plot(data)
         plt.show()
