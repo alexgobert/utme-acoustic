@@ -47,6 +47,18 @@ def fft_process(signal: Signal, plot=False) -> NDArray:
 
 
 def process_files(angleStep: int, freq: int, dir_path: str = 'test_results'):
+    '''
+    Process and plot test results on a polar plot.
+
+    Parameters
+    ---------
+    angleStep : int
+        Angle increment at which data was gathered
+    freq : int
+        Frequency at which to plot
+    dir_path : str, optional
+        Directory that contains the files to plot. Defaults to 'test_results'
+    '''
     files = get_filenames_in_order(dir_path, 360 // angleStep)
 
     # read WAV file and perform A weighting

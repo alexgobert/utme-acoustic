@@ -8,6 +8,13 @@ from SignalProcessing import process_files
 BAUD = 115200
 
 def main(play_file: str, rec_dir: str, angleStep: int, freq: int, port: str, baud = BAUD):
+    '''
+    Main driver that handles rotation, audio playback, audio recording, and plotting results.
+
+    Parameters
+    ----------
+    
+    '''
     commands, batch_size = create_commands(angleStep)
 
     with closing(connect_arduino(port, baud)) as arduino:
