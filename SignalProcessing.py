@@ -57,11 +57,15 @@ def process_files(angleStep: int, freq: int, dir_path: str = 'test_results'):
 
     data = np.fromiter((10*np.log10(angle[freq]) for angle in raw_data), float)
     data -= np.max(data)
+    data = np.append(data, data[0])
 
-    theta = np.arange(0, 360, angleStep) * np.pi / 180
+    theta = np.arange(0, 360+angleStep, angleStep) * np.pi / 180
 
-    plt.polar(theta, data, marker='.')
-    plt.title(f'Beam Pattern of Receiver at {freq:,} Hz')
+    plot, = plt.polar(theta, data, marker='.')
+    plot.set_label(f'{freq:,} Hz')
+
+    plt.legend(loc='upper left', bbox_to_anchor=(-0.3, 1))
+    plt.title('Beam Pattern of Receiver')
     plt.show()
 
 
