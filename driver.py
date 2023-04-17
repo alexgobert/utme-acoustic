@@ -23,7 +23,7 @@ def main(play_file: str, rec_dir: str, angleStep: int, freq: int, port: str, bau
     process_files(angleStep, freq)
 
 
-def rotate_only(angleStep: int, port = PORT, baud = BAUD):
+def rotate_only(angleStep: int, port, baud = BAUD):
     commands, _ = create_commands(angleStep)
 
     with closing(connect_arduino(port, baud)) as arduino:
@@ -41,4 +41,4 @@ def process_only(angleStep: int, rec_dir: str):
 
 
 if __name__ == '__main__':
-    rotate_only(30)
+    rotate_only(30, 'COM7')
