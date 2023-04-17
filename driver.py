@@ -4,10 +4,9 @@ from contextlib import closing
 from time import sleep
 
 # default serial settings
-PORT = 'COM3'
 BAUD = 115200
 
-def main(play_file: str, rec_dir: str, angleStep: int, port = PORT, baud = BAUD):
+def main(play_file: str, rec_dir: str, angleStep: int, port, baud = BAUD):
     commands, batch_size = create_commands(angleStep)
 
     with closing(connect_arduino(port, baud)) as arduino:
@@ -33,6 +32,10 @@ def rotate_only(angleStep: int, port = PORT, baud = BAUD):
             
 
     print('test complete')
+
+
+def process_only(angleStep: int, rec_dir: str):
+    pass
 
 
 if __name__ == '__main__':

@@ -1,7 +1,5 @@
-import tkinter as tk
-from tkinter import ttk
-from tkinter import filedialog
-import os
+from tkinter import Tk, ttk, filedialog, END
+from os import getcwd
 from driver import main
 from serial.tools.list_ports import comports
 
@@ -57,13 +55,13 @@ class AcousticDirectivityDriverGUI:
         self.play_button.grid(row=5, column=1, padx=5, pady=5)
 
     def browse_files(self):
-        file_path = filedialog.askopenfilename(initialdir=os.getcwd(), title="Select File", filetypes=(("MP3 Files", "*.mp3"),))
-        self.path_entry.delete(0, tk.END)
+        file_path = filedialog.askopenfilename(initialdir=getcwd(), title="Select File", filetypes=(("MP3 Files", "*.mp3"),))
+        self.path_entry.delete(0, END)
         self.path_entry.insert(0, file_path)
 
     def browse_recording_path(self):
-        recording_path = filedialog.askdirectory(initialdir=os.getcwd(), title="Select Folder")
-        self.recording_entry.delete(0, tk.END)
+        recording_path = filedialog.askdirectory(initialdir=getcwd(), title="Select Folder")
+        self.recording_entry.delete(0, END)
         self.recording_entry.insert(0, recording_path)
 
     def start_test(self):
@@ -94,6 +92,6 @@ class AcousticDirectivityDriverGUI:
         
 
 if __name__ == '__main__':
-    root = tk.Tk()
+    root = Tk()
     my_gui = AcousticDirectivityDriverGUI(root)
     root.mainloop()
