@@ -3,7 +3,7 @@ from time import sleep
 from serial import Serial
 
 CONTINUOUS_SPEED = 1 / 60 * 360 # deg/sec
-BUTTON_DELAY = 2.5 # sec
+BUTTON_DELAY = 3.5 # sec
 DEGREE_THRESHOLD = CONTINUOUS_SPEED * BUTTON_DELAY
 
 # codes
@@ -19,9 +19,9 @@ FASTER = 'e'
 
 
 def sendCommand(startDelay: float, command: str, arduino: Serial):
-    print(f'Sleep: {startDelay}\tCommand: {command}')
     sleep(startDelay)
 
+    print(f'Sleep: {startDelay}\tCommand: {command}')
     arduino.write(command.encode())
 
 
