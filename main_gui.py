@@ -88,6 +88,7 @@ class AcousticDirectivityDriverGUI:
         rec_path = self.recording_entry.get()
         angleStep = int(self.rotation_entry.get())
         port = self.port_entry.get()[-5:-1] # substring to get COM name
+        port = '/dev/cu.usbmodem14301'
         freq = int(self.freq_entry.get())
 
         main(mp3, rec_path, angleStep, freq, port)
