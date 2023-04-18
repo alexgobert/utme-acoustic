@@ -54,6 +54,12 @@ void loop() {
     while (Serial.available() == 0) {}
 
     char input = Serial.read();
+    
+    // convert uppercase to lowercase
+    if (!isdigit(input) && isupper(input)) {
+        input = input - 'A' + 'a';
+    }
+
     switch (input) {
         case '1': // one degree
             sCommand = 0x46;
