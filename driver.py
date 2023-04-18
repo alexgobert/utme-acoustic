@@ -13,7 +13,18 @@ def main(play_file: str, rec_dir: str, angleStep: int, freq: int, port: str, bau
 
     Parameters
     ----------
-    
+    play_file : str
+        Path to file to send to speaker
+    rec_dir : str
+        Path to directory to store recorded data
+    angleStep : int
+        Angle increment in degrees
+    freq : int
+        Frequency to plot in Hz
+    port : str
+        Serial port that Arduino is connected to
+    baud : str, optional
+        Baud rate of Arduino Serial connection. This is always set to 115,200
     '''
     commands, batch_size = create_commands(angleStep)
 
@@ -30,7 +41,19 @@ def main(play_file: str, rec_dir: str, angleStep: int, freq: int, port: str, bau
     process_files(angleStep, freq)
 
 
-def rotate_only(angleStep: int, port, baud = BAUD):
+def rotate_only(angleStep: int, port: str, baud = BAUD):
+    '''
+    Debug function that only performs the rotation component of the test.
+    
+    Parameters
+    ----------
+    angleStep : int
+        Angle increment in degrees
+    port : str
+        Serial port that Arduino is connected to
+    baud : str, optional
+        Baud rate of Arduino Serial connection. This is always set to 115,200
+    '''
     commands, _ = create_commands(angleStep)
 
     with closing(connect_arduino(port, baud)) as arduino:
