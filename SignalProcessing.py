@@ -77,7 +77,7 @@ def process_files(angleStep: int, freq: int, dir_path: str = 'test_results'):
     plot.set_label(f'{freq:,} Hz')
 
     plt.legend(loc='upper left', bbox_to_anchor=(-0.3, 1))
-    plt.title('Beam Pattern of Receiver')
+    plt.title(f'Beam Pattern of Receiver at {angleStep}$\degree$ Increments')
     plt.show()
 
 
