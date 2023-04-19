@@ -22,24 +22,49 @@ FASTER = 'e'
 
 
 def sendCommand(startDelay: float, command: str, arduino: Serial):
+    '''
+    Sends a command to an Arduino via a serial connection. Assuming that a successful signal will make a loud, auditory chirp, retries command until a loud sound is detected.
+
+    Parameters
+    ----------
+    startDelay : float
+        Time to wait before sending command
+    command : str
+        Command to send
+    arduino : Serial
+        Serial connection through which to send the command
+    '''
     beepDetected = False
-    queue = Queue()
+    queue = Queue() # instantiate a Queue to keep track of beeps
+
+    # send command until feedback detected
     while (not beepDetected):
+        # instantiate a thread to list for auditory feedback
         listener = Thread(target=checkVolume, args=(queue,))
         listener.start()
+
         sleep(startDelay)
 
         print(f'Sleep: {startDelay}\tCommand: {command}')
         arduino.write(command.encode())
 
+        # determine if auditory feedback was heard
         listener.join()
         beepDetected = queue.get()
 
         if (not beepDetected):
-            print('beep not detected, retrying')
+            print('beep not detected, retrying', end='\t')
 
 
 def setupTurntable(arduino: Serial):
+    '''
+    Initialize turntable for testing. Sets speed to 6 deg/sec and sets direction to clockwise.
+
+    Parameters
+    ----------
+    arduino : Serial
+        Serial connection through which to send commands
+    '''
     minimizeSpeed(arduino)
     
     # make sure it's going CW
@@ -49,6 +74,14 @@ def setupTurntable(arduino: Serial):
 
 
 def minimizeSpeed(arduino: Serial):
+    '''
+    Minimizes turntable speed to 6 deg/sec. The turntable has 10 speeds, so this sends 10 slow down signals.
+
+    Parameters
+    ----------
+    arduino : Serial
+        Serial connection through which to send commands
+    '''
     sleep(3) # give arduino time to init
     for _ in range(10):
         sendCommand(BUTTON_DELAY, SLOWER, arduino)
@@ -89,23 +122,35 @@ def create_commands(angleStep: int) -> Tuple[List[Tuple[float, str]], int]:
     
     return commands, batch_size
 
-def connect_arduino(port: str, baud: int):
+def connect_arduino(port: str, baud: int) -> Serial:
     '''
-    Attempts to connect to Arduino through the serial port and sends the acquistion data rate to the Arduino
+    Attempts to connect to Arduino through the serial port and sends the acquistion data rate to the Arduino.
+
+    Parameters
+    ----------
+    port : str
+        Port to establish serial connection
+    baud : int
+        Baud rate to use for serial communication
+
+    Returns
+    -------
+    serial_connection : Serial
+        Serial connection to use for communication
     '''
-    serialConnection = None
+    serial_connection = None
 
     print(f'Trying to connect to: {port} at {baud} BAUD.')
     try:
-        serialConnection = Serial(port, baud, timeout=4)
+        serial_connection = Serial(port, baud, timeout=4)
         print(f'Connected to {port} at {baud} BAUD.')
     except:
         print(f'Failed to connect with {port} at {baud} BAUD.')
 
-    if serialConnection:
-        serialConnection.reset_input_buffer()
+    if serial_connection:
+        serial_connection.reset_input_buffer()
 
-    return serialConnection
+    return serial_connection
 
 if __name__ == '__main__':
     commands, batch_size = create_commands(1)
