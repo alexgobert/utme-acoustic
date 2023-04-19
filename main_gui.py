@@ -84,14 +84,13 @@ class AcousticDirectivityDriverGUI:
 
     def start_test(self):
         if not self.fields_filled():
-            # TODO: input validation
+            # TODO: error message
             return
 
         mp3 = self.path_entry.get()
         rec_path = self.recording_entry.get()
         angleStep = int(self.rotation_entry.get())
-        # port = next(grep(self.port_entry.get())).device
-        port = 'COM7'
+        port = self.get_port()
         freq = int(self.freq_entry.get())
 
         main(mp3, rec_path, angleStep, freq, port)
@@ -124,7 +123,6 @@ class AcousticDirectivityDriverGUI:
 
         self.estimate_label.config(text=self.format_date(time))
 
-
     def fields_filled(self) -> bool:
         return all((
             self.is_int(self.rotation_entry.get()),
@@ -133,6 +131,13 @@ class AcousticDirectivityDriverGUI:
             self.recording_entry.get(),
             self.port_entry.get()
         ))
+
+    def get_port(self) -> str:
+        port_str = self.port_entry.get()
+        ports = list(map(str, self.ports))
+
+        idx = ports.index(port_str)
+        return self.ports[idx].device
     
     @classmethod
     def is_int(cls, val) -> bool:
