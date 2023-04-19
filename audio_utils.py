@@ -16,7 +16,7 @@ mixer.init()
 sample_rate = 44100
 chunk = 1024
 
-def checkVolume(queue: Queue, loudness_threshold = 60):
+def checkVolume(queue: Queue, loudness_threshold: float = 60):
     '''
     Intended for use in a Thread. Determines whether or not a loud sound is detected from the microphone, like the beep of a turntable. Stores a boolean result in a Queue. The result is True if a loud sound is detected, False otherwise.
 
