@@ -31,6 +31,10 @@ def main(play_file: str, rec_dir: str, angleStep: int, freq: int, port: str, bau
     with closing(connect_arduino(port, baud)) as arduino:
         setupTurntable(arduino)
         for idx, (sleepTime, command) in enumerate(commands):
+            # status of angle
+            if isInt(360 / idx):
+                print(f'Current angle: {360 // idx} degrees')
+            
             # only execute audio if done rotating
             if idx % batch_size == 0:
                 run_threads(play_file, rec_dir)
@@ -65,6 +69,13 @@ def rotate_only(angleStep: int, port: str, baud = BAUD):
 
     print('test complete')
 
+def isInt(val) -> bool:
+    try:
+        int(val)
+    except:
+        return False
+    
+    return True
 
 if __name__ == '__main__':
     rotate_only(1, 'COM7')
