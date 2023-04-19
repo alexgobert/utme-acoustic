@@ -40,7 +40,7 @@ def sendCommand(startDelay: float, command: str, arduino: Serial):
     # send command until feedback detected
     while (not beepDetected):
         # instantiate a thread to list for auditory feedback
-        listener = Thread(target=checkVolume, args=(queue,))
+        listener = Thread(target=checkVolume, args=(queue, 55))
         listener.start()
 
         sleep(startDelay)

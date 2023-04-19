@@ -65,37 +65,10 @@ def rotate_only(angleStep: int, port: str, baud = BAUD):
     with closing(connect_arduino(port, baud)) as arduino:
         setupTurntable(arduino)
         for sleepTime, command in commands:
-            # sleep(max(0, BUTTON_DELAY - sleepTime))
+            sleep(max(0, BUTTON_DELAY - sleepTime))
             sendCommand(sleepTime, command, arduino)
             
-
     print('test complete')
-
-
-def get_filenames_in_order(directory: str, limit=None) -> list:
-    '''
-    Gets list of filenames sorted in chronological order.
-
-    Parameters
-    ----------
-    directory : str
-        Directory from which to get files
-    limit : int, optional
-        Optional, number of files to return
-
-    Returns
-    -------
-    List that contains filesnames sorted in chronological order, with a limit if given.
-    '''
-    filenames = listdir(directory)
-    timestamps = []
-    for filename in filenames:
-        timestamp_str = filename.split('-')[-1].split('.')[0]
-        timestamp = datetime.fromtimestamp(int(timestamp_str))
-        timestamps.append((timestamp, filename))
-    
-    files = [filename for _, filename in sorted(timestamps)]
-    return files[:limit] if limit else files
 
 
 def is_int(val) -> bool:
@@ -119,4 +92,4 @@ def is_int(val) -> bool:
     return True
 
 if __name__ == '__main__':
-    rotate_only(1, 'COM7')
+    rotate_only(30, 'COM7')

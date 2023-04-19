@@ -1,6 +1,5 @@
 import numpy as np
 from acoustics._signal import Signal
-from data_processing import get_filenames_in_order
 import matplotlib.pyplot as plt
 
 NDArray = np.ndarray
@@ -90,6 +89,32 @@ def plotMain():
 
         plt.plot(data)
         plt.show()
+
+
+def get_filenames_in_order(directory: str, limit=None) -> list:
+    '''
+    Gets list of filenames sorted in chronological order.
+
+    Parameters
+    ----------
+    directory : str
+        Directory from which to get files
+    limit : int, optional
+        Optional, number of files to return
+
+    Returns
+    -------
+    List that contains filesnames sorted in chronological order, with a limit if given.
+    '''
+    filenames = listdir(directory)
+    timestamps = []
+    for filename in filenames:
+        timestamp_str = filename.split('-')[-1].split('.')[0]
+        timestamp = datetime.fromtimestamp(int(timestamp_str))
+        timestamps.append((timestamp, filename))
+    
+    files = [filename for _, filename in sorted(timestamps)]
+    return files[:limit] if limit else files
 
 
 if __name__ == '__main__':
