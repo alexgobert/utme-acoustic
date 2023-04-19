@@ -87,8 +87,7 @@ class AcousticDirectivityDriverGUI:
         mp3 = self.path_entry.get()
         rec_path = self.recording_entry.get()
         angleStep = int(self.rotation_entry.get())
-        port = self.port_entry.get()[-5:-1] # substring to get COM name
-        port = '/dev/cu.usbmodem14301'
+        port = self.port_entry.get() # substring to get COM name
         freq = int(self.freq_entry.get())
 
         main(mp3, rec_path, angleStep, freq, port)
@@ -142,7 +141,7 @@ class AcousticDirectivityDriverGUI:
 
     @classmethod
     def get_ports(cls) -> list:
-        return [port.description for port in comports()]   
+        return [port.device for port in comports()]   
     
     @classmethod
     def format_date(cls, strng: str) -> str:

@@ -59,22 +59,19 @@ def create_commands(angleStep: int) -> Tuple[List[Tuple[float, str]], int]:
     '''
 
     commands = []
+    batch_size = 0
     
-    if angleStep < DEGREE_THRESHOLD:
+    if angleStep <= DEGREE_THRESHOLD:
         # one degree button angleStep times
         batch_size = angleStep
-        for _ in range(0, 360 + angleStep, angleStep):
-            # commands.append((0, ONE_DEGREE))
-            [commands.append((BUTTON_DELAY, ONE_DEGREE)) for _ in range(angleStep+1)]
+
+        commands = [(BUTTON_DELAY, ONE_DEGREE)] * 360
     else:
         # play/pause for enough time
         rotationTime = angleStep / CONTINUOUS_SPEED
         batch_size = 2
 
-        for _ in range(0, 360, angleStep):
-
-            commands.append((0.5, PLAY_PAUSE)) # start rotation
-            commands.append((rotationTime, PLAY_PAUSE)) # stop rotation
+        commands = [(0.5, PLAY_PAUSE), (rotationTime, PLAY_PAUSE)] * (360 // angleStep)
     
     return commands, batch_size
 
@@ -97,6 +94,6 @@ def connect_arduino(port: str, baud: int):
     return serialConnection
 
 if __name__ == '__main__':
-    # commands = create_commands(10, 1)
-    commands = create_commands(1, )
+    commands, batch_size = create_commands(30)
+    print(len(commands))
     print(commands)
