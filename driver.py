@@ -32,7 +32,7 @@ def main(play_file: str, rec_dir: str, angleStep: int, freq: int, port: str, bau
         setupTurntable(arduino)
         for idx, (sleepTime, command) in enumerate(commands):
             # status of angle
-            if isInt(360 / idx):
+            if is_int(360 / idx):
                 print(f'Current angle: {360 // idx} degrees')
             
             # only execute audio if done rotating
@@ -69,7 +69,19 @@ def rotate_only(angleStep: int, port: str, baud = BAUD):
 
     print('test complete')
 
-def isInt(val) -> bool:
+def is_int(val) -> bool:
+    '''
+    Checks if a value is an integer.
+
+    Parameters
+    ----------
+    val
+        Value to test as an integer
+
+    Returns
+    -------
+    True if val is an integer, False otherwise
+    '''
     try:
         int(val)
     except:
