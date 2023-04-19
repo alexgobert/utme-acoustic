@@ -59,7 +59,7 @@ def rotate_only(angleStep: int, port: str, baud = BAUD):
     with closing(connect_arduino(port, baud)) as arduino:
         setupTurntable(arduino)
         for sleepTime, command in commands:
-            sleep(max(0, BUTTON_DELAY - sleepTime))
+            # sleep(max(0, BUTTON_DELAY - sleepTime))
             sendCommand(sleepTime, command, arduino)
             
 
@@ -67,4 +67,4 @@ def rotate_only(angleStep: int, port: str, baud = BAUD):
 
 
 if __name__ == '__main__':
-    rotate_only(30, 'COM7')
+    rotate_only(1, 'COM7')

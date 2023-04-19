@@ -1,7 +1,7 @@
 from tkinter import Tk, ttk, filedialog, END
 from os import getcwd
 from driver import main
-from serial.tools.list_ports import comports
+from serial.tools.list_ports import comports, grep
 from SignalProcessing import process_files
 from arduino_controller import create_commands
 from functools import reduce
@@ -14,6 +14,8 @@ class AcousticDirectivityDriverGUI:
         self.master = master
         self.master.title("UTME Acoustic Directivity Driver")
         self.master.configure(background="black")
+        
+        self.ports = comports()
 
         # Create labels and entry fields
         self.path_label = ttk.Label(master, text="Path to mp3 file to be played:")
@@ -23,7 +25,7 @@ class AcousticDirectivityDriverGUI:
         self.recording_label = ttk.Label(master, text="Path to store .WAV recording:")
         self.recording_entry = ttk.Entry(master, width=50)
         self.port_label = ttk.Label(master, text='Arduino Port:')
-        self.port_entry = ttk.Combobox(master, values=self.get_ports(), width=45)
+        self.port_entry = ttk.Combobox(master, values=self.ports, width=45)
         self.freq_label = ttk.Label(master, text='Frequency to plot:')
         self.freq_entry = ttk.Entry(master)
         self.estimate_label = ttk.Label(master, text='')
@@ -69,6 +71,7 @@ class AcousticDirectivityDriverGUI:
         self.estimate_button.grid(row=6, column=2, padx=0, pady=5)
         self.estimate_label.grid(row=7, column=2, padx=5, pady=5)
 
+
     def browse_files(self):
         file_path = filedialog.askopenfilename(initialdir=getcwd(), title="Select File", filetypes=(("MP3 Files", "*.mp3"),))
         self.path_entry.delete(0, END)
@@ -87,7 +90,8 @@ class AcousticDirectivityDriverGUI:
         mp3 = self.path_entry.get()
         rec_path = self.recording_entry.get()
         angleStep = int(self.rotation_entry.get())
-        port = self.port_entry.get() # substring to get COM name
+        # port = next(grep(self.port_entry.get())).device
+        port = 'COM7'
         freq = int(self.freq_entry.get())
 
         main(mp3, rec_path, angleStep, freq, port)
@@ -129,7 +133,7 @@ class AcousticDirectivityDriverGUI:
             self.recording_entry.get(),
             self.port_entry.get()
         ))
-
+    
     @classmethod
     def is_int(cls, val) -> bool:
         try:
@@ -138,10 +142,6 @@ class AcousticDirectivityDriverGUI:
             return False
         
         return True
-
-    @classmethod
-    def get_ports(cls) -> list:
-        return [port.device for port in comports()]   
     
     @classmethod
     def format_date(cls, strng: str) -> str:

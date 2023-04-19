@@ -1,6 +1,9 @@
 from typing import List, Tuple
 from time import sleep
 from serial import Serial
+from threading import Thread
+from audio_utils import checkVolume
+from queue import Queue
 
 CONTINUOUS_SPEED = 1 / 60 * 360 # deg/sec
 BUTTON_DELAY = 3.5 # sec
@@ -19,10 +22,21 @@ FASTER = 'e'
 
 
 def sendCommand(startDelay: float, command: str, arduino: Serial):
-    sleep(startDelay)
+    beepDetected = False
+    queue = Queue()
+    while (not beepDetected):
+        listener = Thread(target=checkVolume, args=(queue,))
+        listener.start()
+        sleep(startDelay)
 
-    print(f'Sleep: {startDelay}\tCommand: {command}')
-    arduino.write(command.encode())
+        print(f'Sleep: {startDelay}\tCommand: {command}')
+        arduino.write(command.encode())
+
+        listener.join()
+        beepDetected = queue.get()
+
+        if (not beepDetected):
+            print('beep not detected, retrying')
 
 
 def setupTurntable(arduino: Serial):
@@ -94,6 +108,6 @@ def connect_arduino(port: str, baud: int):
     return serialConnection
 
 if __name__ == '__main__':
-    commands, batch_size = create_commands(30)
+    commands, batch_size = create_commands(1)
     print(len(commands))
     print(commands)

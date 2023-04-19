@@ -5,6 +5,8 @@ from threading import Thread
 from mutagen.mp3 import MP3
 from datetime import datetime
 from time import sleep
+from audioop import rms
+from numpy import log10
 
 # Set up Pygame mixer
 mixer.init()
@@ -12,6 +14,33 @@ mixer.init()
 # Define variables for microphone recording
 sample_rate = 44100
 chunk = 1024
+
+def checkVolume(queue) -> bool:
+    beepDetected = False
+    db = lambda x: 20 * log10(x)
+
+    audio_recorder = PyAudio()
+    audio_stream = audio_recorder.open(
+        format=paInt16, 
+        channels=1,
+        rate=sample_rate, 
+        input=True,
+        frames_per_buffer=chunk
+    )
+    
+    for i in range(sample_rate // chunk * 4):
+        audio_data = audio_stream.read(chunk)
+        loudness = db(abs(rms(audio_data, 2)))
+
+        if loudness > 60:
+            beepDetected = True
+            break
+    
+    audio_stream.stop_stream()
+    audio_stream.close()
+    audio_recorder.terminate()
+    
+    queue.put(beepDetected)
 
 # Define a function to play an audio file
 def play_audio(audio_file):
