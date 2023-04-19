@@ -7,6 +7,7 @@ from datetime import datetime
 from time import sleep
 from audioop import rms
 from numpy import log10
+from queue import Queue
 
 # Set up Pygame mixer
 mixer.init()
@@ -15,9 +16,20 @@ mixer.init()
 sample_rate = 44100
 chunk = 1024
 
-def checkVolume(queue) -> bool:
+def checkVolume(queue: Queue, loudness_threshold = 60):
+    '''
+    Intended for use in a Thread. Determines whether or not a loud sound is detected from the microphone, like the beep of a turntable. Stores a boolean result in a Queue. The result is True if a loud sound is detected, False otherwise.
+
+    Parameters
+    ----------
+    queue : Queue
+        An instance of the Queue class. Used to store result
+    loudness_threshold : float, optional
+        Loudness threshold used to determine whether a sound is too loud in decibels. Defaults at 60 dB.
+    '''
+
     beepDetected = False
-    db = lambda x: 20 * log10(x)
+    db = lambda x: 20 * log10(x) if x > 0 else 0
 
     audio_recorder = PyAudio()
     audio_stream = audio_recorder.open(
@@ -32,7 +44,7 @@ def checkVolume(queue) -> bool:
         audio_data = audio_stream.read(chunk)
         loudness = db(abs(rms(audio_data, 2)))
 
-        if loudness > 60:
+        if loudness > loudness_threshold:
             beepDetected = True
             break
     
@@ -56,11 +68,15 @@ def record_audio(audio_filename, audio_length, audio_path):
     audio_buffer = []
     
     audio_recorder = PyAudio()
-    audio_stream = audio_recorder.open(format=audio_format, channels=channels,
-                                        rate=sample_rate, input=True,
-                                        frames_per_buffer=chunk)
+    audio_stream = audio_recorder.open(
+        format=audio_format, 
+        channels=channels,
+        rate=sample_rate,
+        input=True,
+        frames_per_buffer=chunk
+    )
     
-    for i in range(int(sample_rate / chunk * audio_length)):
+    for _ in range(sample_rate // chunk * audio_length):
         audio_data = audio_stream.read(chunk)
         audio_buffer.append(audio_data)
     
