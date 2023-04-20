@@ -34,8 +34,8 @@ def main(play_file: str, rec_dir: str, angleStep: int, freq: int, port: str, bau
         setupTurntable(arduino)
         for idx, (sleepTime, command) in enumerate(commands):
             # status of angle
-            if is_int(360 / idx):
-                print(f'Current angle: {360 // idx} degrees')
+            if idx != 0 and is_int(360 / idx):
+                print(f'Current angle: {idx} degrees')
             
             # only execute audio if done rotating
             if idx % batch_size == 0:
@@ -85,11 +85,9 @@ def is_int(val) -> bool:
     True if val is an integer, False otherwise
     '''
     try:
-        int(val)
+        return int(val) == float(val)
     except:
         return False
-    
-    return True
 
 if __name__ == '__main__':
     rotate_only(30, 'COM7')
