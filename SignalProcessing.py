@@ -138,6 +138,9 @@ def get_filenames_in_order(directory: str, limit=None) -> list:
     filenames = listdir(directory)
     timestamps = []
     for filename in filenames:
+        if filename == '.DS_Store':
+            continue
+
         timestamp_str = filename.split('-')[-1].split('.')[0]
         timestamp = datetime.fromtimestamp(int(timestamp_str))
         timestamps.append((timestamp, filename))
