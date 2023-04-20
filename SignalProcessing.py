@@ -6,7 +6,7 @@ from datetime import datetime
 
 NDArray = np.ndarray
 
-def fft_process(signal: Signal, plot=False) -> NDArray:
+def fft_process(signal: Signal, plot: bool = False) -> NDArray:
     '''
     Function for performing an FFT on a .WAV file. Because FFTs are symmetric, this function discards the second half of the FFT and doubles the magnitude of the first half to preserve the energy of the wave. The DC offset and the Nyquist point are unique, and are therefore not doubled.
 
@@ -138,7 +138,7 @@ def get_filenames_in_order(directory: str, limit=None) -> list:
     filenames = listdir(directory)
     timestamps = []
     for filename in filenames:
-        if filename == '.DS_Store':
+        if filename == '.DS_Store': # ignore invisible MacOS files
             continue
 
         timestamp_str = filename.split('-')[-1].split('.')[0]

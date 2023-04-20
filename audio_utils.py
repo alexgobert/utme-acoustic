@@ -57,14 +57,34 @@ def checkVolume(queue: Queue, loudness_threshold: float = 60):
     queue.put(beepDetected)
 
 # Define a function to play an audio file
-def play_audio(audio_file):
+def play_audio(audio_file: str):
+    '''
+    Plays audio through default speaker
+
+    Parameters
+    ----------
+    audio_file : str
+        Audio file to play
+    '''
     sleep(1)
     
     mixer.music.load(audio_file)
     mixer.music.play()
 
 # Define a function to record audio from the microphone
-def record_audio(audio_filename, audio_length, audio_path):
+def record_audio(audio_filename: str, audio_length: int, audio_path: str):
+    '''
+    Records audio from default microphone
+
+    Parameters
+    ----------
+    audio_filename : str
+        Filename to record to
+    audio_length : int
+        Length of recording
+    audio_path : str
+        Directory to save recorded file to
+    '''
     audio_format = paInt16
     channels = 1
     
@@ -94,7 +114,17 @@ def record_audio(audio_filename, audio_length, audio_path):
     audio_stream.close()
     audio_recorder.terminate()
 
-def run_threads(audio_file: str, audio_path: str) -> bool:
+def run_threads(audio_file: str, audio_path: str):
+    '''
+    Runs playback and recording threads
+
+    Parameters
+    ----------
+    audio_file : str
+        Audio file to play
+    audio_path : str
+        Directory to store recorded file
+    '''
     # Get the length of the audio file
     audio_length = int(MP3(audio_file).info.length)
 
@@ -115,7 +145,6 @@ def run_threads(audio_file: str, audio_path: str) -> bool:
     record_audio_thread.join()
 
     print('done playing')
-    return True
 
 if __name__ == '__main__':
     audio_file = "01-White-Noise-10sec.mp3" # replace with the filename of the MP3 file passed from your GUI
