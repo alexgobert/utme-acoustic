@@ -3,8 +3,6 @@ from arduino_controller import create_commands, connect_arduino, sendCommand, se
 from contextlib import closing
 from time import sleep
 from SignalProcessing import process_files
-from os import listdir
-from datetime import datetime
 
 # default serial settings
 BAUD = 115200
