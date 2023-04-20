@@ -82,17 +82,17 @@ def record_audio(audio_filename, audio_length, audio_path):
         for _ in range(sample_rate // chunk * audio_length)
     )
     
-    audio_stream.stop_stream()
-    audio_stream.close()
-    audio_recorder.terminate()
-    
     # Save the audio recording to a WAV file in the specified path
-    audio_file_path = audio_path + "/" + audio_filename
+    audio_file_path = f'{audio_path}/{audio_filename}'
     with wave_open(audio_file_path, 'wb') as audio_file:
         audio_file.setnchannels(channels)
         audio_file.setsampwidth(audio_recorder.get_sample_size(audio_format))
         audio_file.setframerate(sample_rate)
         audio_file.writeframes(b''.join(audio_buffer))
+    
+    audio_stream.stop_stream()
+    audio_stream.close()
+    audio_recorder.terminate()
 
 def run_threads(audio_file: str, audio_path: str) -> bool:
     # Get the length of the audio file
