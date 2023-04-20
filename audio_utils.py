@@ -1,6 +1,5 @@
 from pyaudio import paInt16, PyAudio
 from wave import open as wave_open
-from pygame import mixer
 from threading import Thread
 from mutagen.mp3 import MP3
 from datetime import datetime
@@ -8,6 +7,9 @@ from time import sleep
 from audioop import rms
 from numpy import log10
 from queue import Queue
+from os import environ
+environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide' # hide welcome
+from pygame import mixer
 
 # Set up Pygame mixer
 mixer.init()
@@ -40,7 +42,7 @@ def checkVolume(queue: Queue, loudness_threshold: float = 60):
         frames_per_buffer=chunk
     )
     
-    for i in range(sample_rate // chunk * 4):
+    for _ in range(sample_rate // chunk * 4):
         audio_data = audio_stream.read(chunk)
         loudness = db(abs(rms(audio_data, 2)))
 
@@ -65,7 +67,6 @@ def play_audio(audio_file):
 def record_audio(audio_filename, audio_length, audio_path):
     audio_format = paInt16
     channels = 1
-    audio_buffer = []
     
     audio_recorder = PyAudio()
     audio_stream = audio_recorder.open(
@@ -76,9 +77,10 @@ def record_audio(audio_filename, audio_length, audio_path):
         frames_per_buffer=chunk
     )
     
-    for _ in range(sample_rate // chunk * audio_length):
-        audio_data = audio_stream.read(chunk)
-        audio_buffer.append(audio_data)
+    audio_buffer = (
+        audio_stream.read(chunk)
+        for _ in range(sample_rate // chunk * audio_length)
+    )
     
     audio_stream.stop_stream()
     audio_stream.close()
@@ -86,12 +88,11 @@ def record_audio(audio_filename, audio_length, audio_path):
     
     # Save the audio recording to a WAV file in the specified path
     audio_file_path = audio_path + "/" + audio_filename
-    audio_file = wave_open(audio_file_path, 'wb')
-    audio_file.setnchannels(channels)
-    audio_file.setsampwidth(audio_recorder.get_sample_size(audio_format))
-    audio_file.setframerate(sample_rate)
-    audio_file.writeframes(b''.join(audio_buffer))
-    audio_file.close()
+    with wave_open(audio_file_path, 'wb') as audio_file:
+        audio_file.setnchannels(channels)
+        audio_file.setsampwidth(audio_recorder.get_sample_size(audio_format))
+        audio_file.setframerate(sample_rate)
+        audio_file.writeframes(b''.join(audio_buffer))
 
 def run_threads(audio_file: str, audio_path: str) -> bool:
     # Get the length of the audio file
@@ -117,6 +118,6 @@ def run_threads(audio_file: str, audio_path: str) -> bool:
     return True
 
 if __name__ == '__main__':
-    audio_file = "example.mp3" # replace with the filename of the MP3 file passed from your GUI
-    audio_path = "/path/to/save/wav/file" # replace with the path where the WAV file should be saved
+    audio_file = "01-White-Noise-10sec.mp3" # replace with the filename of the MP3 file passed from your GUI
+    audio_path = "." # replace with the path where the WAV file should be saved
     run_threads(audio_file, audio_path)

@@ -3,7 +3,6 @@ from acoustics._signal import Signal
 import matplotlib.pyplot as plt
 from os import listdir
 from datetime import datetime
-from threading import Thread
 
 NDArray = np.ndarray
 
