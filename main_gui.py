@@ -16,6 +16,7 @@ class AcousticDirectivityDriverGUI:
         self.master.configure(background="black")
         
         self.ports = comports()
+        self.data = None
 
         # Create labels and entry fields
         self.path_label = ttk.Label(master, text="Path to mp3 file to be played:")
@@ -93,7 +94,7 @@ class AcousticDirectivityDriverGUI:
         port = self.get_port()
         freq = int(self.freq_entry.get())
 
-        main(mp3, rec_path, angleStep, freq, port)
+        self.data = main(mp3, rec_path, angleStep, freq, port)
 
     def start_processing(self):
         if not all((self.is_int(self.rotation_entry.get()), self.is_int(self.freq_entry.get()), self.recording_entry.get())):
@@ -104,7 +105,7 @@ class AcousticDirectivityDriverGUI:
         angleStep = int(self.rotation_entry.get())
         freq = int(self.freq_entry.get())
 
-        process_files(angleStep, freq, rec_path)
+        self.data = process_files(angleStep, freq, rec_path, self.data)
 
     def estimate_time(self):
         if not all((self.is_int(self.rotation_entry.get()), self.path_entry.get())):

@@ -2,12 +2,12 @@ from audio_utils import run_threads
 from arduino_controller import create_commands, connect_arduino, sendCommand, setupTurntable, BUTTON_DELAY
 from contextlib import closing
 from time import sleep
-from SignalProcessing import process_files
+from SignalProcessing import process_files, NDArray
 
 # default serial settings
 BAUD = 115200
 
-def main(play_file: str, rec_dir: str, angleStep: int, freq: int, port: str, baud = BAUD):
+def main(play_file: str, rec_dir: str, angleStep: int, freq: int, port: str, baud = BAUD) -> NDArray:
     '''
     Main driver that handles rotation, audio playback, audio recording, and plotting results.
 
@@ -42,7 +42,7 @@ def main(play_file: str, rec_dir: str, angleStep: int, freq: int, port: str, bau
             sendCommand(sleepTime, command, arduino)
 
     print('test complete, beginning processing')
-    process_files(angleStep, freq)
+    return process_files(angleStep, freq, rec_dir)
 
 
 def rotate_only(angleStep: int, port: str, baud = BAUD):

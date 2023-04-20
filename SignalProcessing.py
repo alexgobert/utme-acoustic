@@ -3,6 +3,7 @@ from acoustics._signal import Signal
 import matplotlib.pyplot as plt
 from os import listdir
 from datetime import datetime
+from threading import Thread
 
 NDArray = np.ndarray
 
@@ -47,9 +48,9 @@ def fft_process(signal: Signal, plot=False) -> NDArray:
     return p
 
 
-def process_files(angleStep: int, freq: int, dir_path: str = 'test_results'):
+def process_files(angleStep: int, freq: int, dir_path: str = 'test_results', raw_data: NDArray = None) -> NDArray:
     '''
-    Process and plot test results on a polar plot.
+    Process and plot test results on a polar plot. Returns processed data intended for storage to use in future computations.
 
     Parameters
     ---------
@@ -59,27 +60,54 @@ def process_files(angleStep: int, freq: int, dir_path: str = 'test_results'):
         Frequency at which to plot
     dir_path : str, optional
         Directory that contains the files to plot. Defaults to 'test_results'
+    raw_data : NDArray, optional
+        NDArray of FFT'ed data. If provided, skips computing another FFT
+
+    Returns
+    -------
+    raw_data : NDArray
+        Array of FFT'ed data. Can store to reduce computational repetitiveness.
     '''
-    files = get_filenames_in_order(dir_path, 360 // angleStep)
+    if raw_data == None:
+        files = get_filenames_in_order(dir_path, 360 // angleStep)
 
-    # read WAV file and perform A weighting
-    raw_data = [
-        fft_process(Signal.from_wav(f'{dir_path}/{file}').weigh())
-        for file in files
-    ]
+        # read WAV file and perform A weighting
+        raw_data = [
+            fft_process(Signal.from_wav(f'{dir_path}/{file}').weigh())
+            for file in files
+        ]
 
-    data = np.fromiter((10*np.log10(angle[freq]) for angle in raw_data), float)
+    data = np.fromiter((10*np.log10(angle[freq]) for angle in raw_data), float) # convert to decibels
     data -= np.max(data)
-    data = np.append(data, data[0])
+    data = np.append(data, data[0]) # connect first and last points
 
+    plot_polar(data, angleStep, freq)
+
+    return raw_data
+
+
+def plot_polar(r: NDArray, angleStep: int, freq: int):
+    '''
+    Plots data on a polar plot.
+
+    Parameters
+    ----------
+    r : NDArray
+        Radial data to plot
+    angleStep : int
+        Angle increment at which data was gathered
+    freq : int
+        Frequency at which to plot
+    '''
+    # need extra point to connect first and last points
     theta = np.arange(0, 360+angleStep, angleStep) * np.pi / 180
 
-    plot, = plt.polar(theta, data, marker='.')
+    plot, = plt.polar(theta, r, marker='.')
     plot.set_label(f'{freq:,} Hz')
 
     plt.legend(loc='upper left', bbox_to_anchor=(-0.3, 1))
-    plt.title(f'Beam Pattern of Receiver at {angleStep}$\degree$ Increments')
-    plt.show()
+    plt.title(f'Beam Pattern of Receiver at {angleStep}$\degree$ Increments in Decibels')
+    plt.show(block=False)
 
 
 def plotMain():
